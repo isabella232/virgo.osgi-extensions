@@ -1,0 +1,8 @@
+Bundle-ManifestVersion: 2
+Bundle-Name: Equinox Specific OSGi Extensions
+Bundle-Vendor: SpringSource Inc.
+Bundle-SymbolicName: org.eclipse.virgo.osgi.launcher
+Bundle-Version: 0
+Main-Class: org.eclipse.virgo.osgi.launcher.Launcher
+Import-Template: 
+ org.osgi.framework.*;version="0"

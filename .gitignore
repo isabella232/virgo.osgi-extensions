@@ -1,0 +1,5 @@
+*/src/main/resources/META-INF/MANIFEST.MF
+*/src/test/resources/META-INF/TEST.MF
+target
+integration-repo
+ivy-cache
