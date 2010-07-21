@@ -30,7 +30,7 @@ import org.eclipse.osgi.baseadaptor.hooks.BundleFileWrapperFactoryHook;
  * protocol as is the Equinox default.
  * 
  * <strong>Concurrent Semantics</strong><br />
- * This class if <strong>thread-safe</strong>.
+ * This class is <strong>thread-safe</strong>.
  * 
  */
 final class ExtendedBundleFileWrapperFactoryHook implements BundleFileWrapperFactoryHook {
@@ -180,9 +180,10 @@ final class ExtendedBundleFileWrapperFactoryHook implements BundleFileWrapperFac
                 if (connection instanceof JarURLConnection) {
                     JarURLConnection jarURLConnection = (JarURLConnection) connection;
                     jarFile = jarURLConnection.getJarFile();
-                    if (jarFile != null && jarFile.getEntry(jarURLConnection.getEntryName()) != null) {
+                    String entryName = jarURLConnection.getEntryName();
+                    if (entryName != null && jarFile != null && jarFile.getEntry(entryName) != null) {
                     	entryExists = true;
-                    }					
+                    }
                 }
             } catch (IOException ioe) {
                 entryExists = false;
@@ -190,7 +191,7 @@ final class ExtendedBundleFileWrapperFactoryHook implements BundleFileWrapperFac
             	if (jarFile != null) {
             		try {
             			jarFile.close();
-            		} catch (IOException _) {		
+            		} catch (IOException _) {
             		}
             	}
             }
