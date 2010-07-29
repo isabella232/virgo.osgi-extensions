@@ -18,6 +18,7 @@
 		<echo message="Starting Up OSGi Launcher" />
 		<java classname="org.eclipse.virgo.osgi.launcher.Launcher" fork="true" spawn="true">
 			<arg value="-Fosgi.console=${console.port}"/>
+			<arg value="-Fosgi.configuration.area=target"/>
 			<arg value="-B${test.bundle}"/>
 			<classpath>
 				<pathelement location="${jar.output.file}"/>
