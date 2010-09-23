@@ -31,7 +31,7 @@ public class FrameworkBuilderTests {
 
     @Test
     public void testSimpleStart() throws BundleException {
-        Properties frameworkProperties = new Properties();
+        Properties frameworkProperties = basicFrameworkProperties();
         FrameworkBuilder builder = new FrameworkBuilder(frameworkProperties);
         Framework framework = builder.start();
 
@@ -49,7 +49,7 @@ public class FrameworkBuilderTests {
         String age = "26";
         String ageOverride = "27";
 
-        Properties frameworkProperties = new Properties();
+        Properties frameworkProperties = basicFrameworkProperties();
 
         frameworkProperties.setProperty("name", name);
         frameworkProperties.setProperty("age", age);
@@ -75,7 +75,7 @@ public class FrameworkBuilderTests {
 
     @Test
     public void testStartWithBundle() throws BundleException {
-        Properties frameworkProperties = new Properties();
+        Properties frameworkProperties = basicFrameworkProperties();
 
         FrameworkBuilder builder = new FrameworkBuilder(frameworkProperties);
         builder.addFrameworkProperty("osgi.clean", "true");
@@ -105,7 +105,7 @@ public class FrameworkBuilderTests {
 
     @Test
     public void testStartWithBundleAutostart() throws BundleException {
-        Properties frameworkProperties = new Properties();
+        Properties frameworkProperties = basicFrameworkProperties();
 
         FrameworkBuilder builder = new FrameworkBuilder(frameworkProperties);
         builder.addFrameworkProperty("osgi.clean", "true");
@@ -135,7 +135,7 @@ public class FrameworkBuilderTests {
 
     @Test
     public void testStartWithLauncherBundles() throws BundleException {
-        Properties frameworkProperties = new Properties();
+        Properties frameworkProperties = basicFrameworkProperties();
 
         frameworkProperties.put("launcher.bundles", "src/test/resources/test-bundle@start");
         FrameworkBuilder builder = new FrameworkBuilder(frameworkProperties);
@@ -165,7 +165,7 @@ public class FrameworkBuilderTests {
 
     @Test
     public void testStartWithBundleDeclaration() throws BundleException {
-        Properties frameworkProperties = new Properties();
+        Properties frameworkProperties = basicFrameworkProperties();
 
         FrameworkBuilder builder = new FrameworkBuilder(frameworkProperties);
         builder.addBundle("src/test/resources/test-bundle@start");
@@ -195,7 +195,7 @@ public class FrameworkBuilderTests {
 
     @Test
     public void testCustomizer() throws BundleException {
-        Properties frameworkProperties = new Properties();
+        Properties frameworkProperties = basicFrameworkProperties();
 
         final AtomicInteger calls = new AtomicInteger();
 
@@ -219,5 +219,11 @@ public class FrameworkBuilderTests {
 
         framework.stop();
 
+    }
+    
+    private static Properties basicFrameworkProperties() {
+        Properties fp = new Properties();
+        fp.put("osgi.configuration.area", "target");
+        return fp;
     }
 }

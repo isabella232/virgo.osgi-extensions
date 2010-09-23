@@ -30,13 +30,7 @@ import org.eclipse.virgo.osgi.extensions.equinox.hooks.PluggableDelegatingClassL
 import org.junit.Test;
 
 /**
- * TODO Document PluggableDelegatingClassLoaderDelegateHookTests
- * <p />
- *
- * <strong>Concurrent Semantics</strong><br />
- *
- * TODO Document concurrent semantics of PluggableDelegatingClassLoaderDelegateHookTests
- *
+ * Tests for {@link PluggableDelegatingClassLoaderDelegateHook}
  */
 public class PluggableDelegatingClassLoaderDelegateHookTests {
     
