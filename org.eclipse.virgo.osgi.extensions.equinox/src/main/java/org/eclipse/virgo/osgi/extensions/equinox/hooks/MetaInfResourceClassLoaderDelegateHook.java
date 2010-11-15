@@ -132,8 +132,7 @@ public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelega
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public Enumeration<?> postFindResources(String name, BundleClassLoader classLoader, BundleData data) throws FileNotFoundException {
+    public Enumeration<URL> postFindResources(String name, BundleClassLoader classLoader, BundleData data) throws FileNotFoundException {
         if (isDelegatedResource(name)) {
             if (this.resourceSearchInProgress.get() == null) {
                 try {
@@ -333,7 +332,7 @@ public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelega
     /**
      * {@inheritDoc}
      */
-    public Enumeration<?> preFindResources(String name, BundleClassLoader classLoader, BundleData data) throws FileNotFoundException {
+    public Enumeration<URL> preFindResources(String name, BundleClassLoader classLoader, BundleData data) throws FileNotFoundException {
         return null;
     }
 }

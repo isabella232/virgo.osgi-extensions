@@ -15,8 +15,11 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.eclipse.virgo.osgi.launcher.parser.ArgumentParser;
 import org.eclipse.virgo.osgi.launcher.parser.BundleEntry;
@@ -148,7 +151,8 @@ public class FrameworkBuilder {
         FrameworkFactory frameworkFactory = FrameworkFactoryLocator.createFrameworkFactory();
 
         Properties resolvedConfiguration = new PropertyPlaceholderResolver().resolve(this.configuration);
-        Framework fwk = frameworkFactory.newFramework(resolvedConfiguration);
+        Map<String, String> resolvedConfigurationMap = convertPropertiesToMap(resolvedConfiguration);
+        Framework fwk = frameworkFactory.newFramework(resolvedConfigurationMap);
 
         fwk.start();
         this.customizer.beforeInstallBundles(fwk);
@@ -157,6 +161,16 @@ public class FrameworkBuilder {
 
         return fwk;
     }
+
+	private Map<String, String> convertPropertiesToMap(
+			Properties props) {
+		Map<String, String> map = new HashMap<String,String>();
+        Set<String> stringPropertyNames = props.stringPropertyNames();
+        for (String propName : stringPropertyNames) {
+			map.put(propName, props.getProperty(propName));
+		}
+		return map;
+	}
 
     private void installAndStartBundles(BundleContext bundleContext) throws BundleException {
         List<Bundle> bundlesToStart = new ArrayList<Bundle>();
