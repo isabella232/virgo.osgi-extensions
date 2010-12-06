@@ -48,6 +48,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
  * Thread-safe.
  * 
  */
+@SuppressWarnings("deprecation")
 public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelegateHook {
 
     private static final String DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME = "org.springframework.osgi.context.support.DelegatedNamespaceHandlerResolver";

@@ -88,9 +88,8 @@ final class ExtendedBundleFileWrapperFactoryHook implements BundleFileWrapperFac
          * {@inheritDoc}
          */
         @Override
-        @SuppressWarnings("unchecked")
-        public Enumeration getEntryPaths(String path) {
-            Enumeration paths = this.bundleFile.getEntryPaths(path);
+        public Enumeration<String> getEntryPaths(String path) {
+            Enumeration<String> paths = this.bundleFile.getEntryPaths(path);
             return paths;
         }
 

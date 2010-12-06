@@ -44,6 +44,7 @@ import org.eclipse.virgo.teststubs.osgi.framework.StubBundleContext;
 
 /**
  */
+@SuppressWarnings("deprecation")
 public class MetaInfResourceClassLoaderDelegateHookTests {
     
     private final BundleClassLoader classLoader = createMock(BundleClassLoader.class);

@@ -50,8 +50,7 @@ public final class PluggableClassLoadingHook implements ClassLoadingHook {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-    public boolean addClassPathEntry(ArrayList cpEntries, String cp, ClasspathManager hostmanager, BaseData sourcedata, ProtectionDomain sourcedomain) {
+    public boolean addClassPathEntry(ArrayList<ClasspathEntry> cpEntries, String cp, ClasspathManager hostmanager, BaseData sourcedata, ProtectionDomain sourcedomain) {
         return false;
     }
 
