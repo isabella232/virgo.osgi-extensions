@@ -18,7 +18,7 @@ import java.net.URI;
  * optionally start that bundle.
  * <p/>
  * Bundle declarations are typically represented as a string of the form:
- * <code>&lt;path&gt;[@lt;@start&gt;]</code>. In this string, path is either a
+ * <code>&lt;path&gt;[&lt;@start&gt;]</code>. In this string, path is either a
  * {@link URI} or a file path (relative or absolute). The <code>@start</code> flag
  * indicates that the bundle should be started by the launcher. Bundles are not started
  * automatically unless specified.
