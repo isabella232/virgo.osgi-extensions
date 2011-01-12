@@ -75,30 +75,56 @@ public final class ArgumentParser {
 
     /**
      * Parses a comma-separated list of bundle entries in the form &lt;uri&gt;[@start].
-     * @param entryList comma-separated list of bundle entry declarations
+     *
+     * @param entryList  comma-separated list of bundle entry declarations
      * @return an array of bundle entries parsed from the list
-     * 
-     * @see #parseBundleEntry(String)
+     *
+     * @see #parseBundleEntry(String, String)
      */
     public BundleEntry[] parseBundleEntries(String entryList) {
+        return parseBundleEntries(null, entryList);
+    }
+
+    /**
+     * Parses a comma-separated list of bundle entries in the form &lt;uri&gt;[@start].
+     *
+     * @param regionPath location of the bundles
+     * @param entryList  comma-separated list of bundle entry declarations
+     * @return an array of bundle entries parsed from the list
+     * 
+     * @see #parseBundleEntry(String, String)
+     */
+    public BundleEntry[] parseBundleEntries(String regionPath, String entryList) {
         String[] entries = entryList.split(",");
         BundleEntry[] result = new BundleEntry[entries.length];
         for (int x = 0; x < result.length; x++) {
-            result[x] = parseBundleEntry(entries[x]);
+            result[x] = parseBundleEntry(regionPath, entries[x]);
         }
         return result;
     }
 
     /**
      * Parses bundle entry in the form &lt;uri&gt;[@start].
-     * @param decl string to parse
+     *
+     * @param decl       string to parse
      * @return bundle entry denoted by the string
      */
     public BundleEntry parseBundleEntry(String decl) {
+        return parseBundleEntry(null, decl);
+    }
+
+    /**
+     * Parses bundle entry in the form &lt;uri&gt;[@start].
+     *
+     * @param regionPath location of the bundles
+     * @param decl       string to parse
+     * @return bundle entry denoted by the string
+     */
+    public BundleEntry parseBundleEntry(String regionPath, String decl) {
         String[] components = parseCommandComponents(decl, BUNDLE_PATH_DELIMITER, MAXIMUM_BUNDLE_DECLARATION_COMPONENTS);
 
         String path = components[0];
-        URI uri = pathToURI(path);
+        URI uri = pathToURI(regionPath, path);
 
         boolean autoStart = false;
         if (components.length == MAXIMUM_BUNDLE_DECLARATION_COMPONENTS) {
@@ -166,12 +192,12 @@ public final class ArgumentParser {
         return components;
     }
 
-    private URI pathToURI(String path) {
+    private URI pathToURI(String root, String path) {
 
         URI uri = null;
 
         // see if the path is a valid file first
-        File f = new File(path);
+        File f = new File(root, path);
         if (f.exists()) {
             uri = f.getAbsoluteFile().toURI();
         }
@@ -182,12 +208,23 @@ public final class ArgumentParser {
                 URI u = new URI(path);
                 if (u.isAbsolute()) {
                     uri = u;
+
+                    // if we have root folder try to construct a valid file path
+                    if (u.getScheme().equals("file")) {
+                        if (root != null) {
+                            f = new File(root, u.getSchemeSpecificPart());
+                            if (f.exists()) {
+                                uri = f.getAbsoluteFile().toURI();
+                            }
+                        }
+                    }
+
                 }
             } catch (URISyntaxException e) {
             }
         }
         
-        if(uri == null) {
+        if (uri == null) {
             throw new ParseException("Path '" + path +"' is not a valid URI or file path");
         }
         
