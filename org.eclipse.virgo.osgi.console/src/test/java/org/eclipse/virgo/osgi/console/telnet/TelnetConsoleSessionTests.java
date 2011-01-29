@@ -40,7 +40,7 @@ public class TelnetConsoleSessionTests {
             socketServer = servSocket.accept();
 
             consoleServer = new TelnetConsoleSession(socketServer, null);
-            consoleServer.start();
+            consoleServer.start(2000);
 
             outClient = socketClient.getOutputStream();
             outClient.write(TEST_CONTENT);
@@ -49,13 +49,13 @@ public class TelnetConsoleSessionTests {
 
             InputStream input = consoleServer.getInput();
             int in = input.read();
-            Assert.assertTrue("Server received [" + in + "] instead of " + TEST_CONTENT + " from the telnet client.", in == TEST_CONTENT);
+            Assert.assertTrue("Server received [" + in + "] instead of [" + TEST_CONTENT + "] from the telnet client.", in == TEST_CONTENT);
 
             input = socketClient.getInputStream();
             in = input.read();
             // here IAC is expected, since when the output stream in TelnetConsoleSession is created, several telnet
             // commands are written to it, each of them starting with IAC
-            Assert.assertTrue("Client receive telnet responses from the server unexpected value [" + in + "] instead of " + IAC + ".", in == IAC);
+            Assert.assertTrue("Client receive telnet responses from the server unexpected value [" + in + "] instead of [" + IAC + "].", in == IAC);
         } finally {
             if (socketClient != null) {
                 socketClient.close();
@@ -95,7 +95,7 @@ public class TelnetConsoleSessionTests {
             socketServer = servSocket.accept();
 
             consoleServer = new TelnetConsoleSession(socketServer, null);
-            consoleServer.start();
+            consoleServer.start(2000);
 
             OutputStream outClient = socketClient.getOutputStream();
             outClient.write(TEST_CONTENT);

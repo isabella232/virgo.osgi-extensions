@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Lazar Kirchev, SAP AG - initial contribution
+ *    Hristo Iliev, SAP AG
  ******************************************************************************/
 
 package org.eclipse.virgo.osgi.console.telnet;
@@ -60,10 +61,14 @@ public class TelnetConsoleSession extends ConsoleSession {
     }
 
     public synchronized void start() throws IOException {
+        start(NEGOTIATION_TIMEOUT);
+    }
+
+    public synchronized void start(long negotiationTimeout) throws IOException {
         TelnetInputHandler telnetInputHandler = new TelnetInputHandler(s.getInputStream(), in, out, callback);
         telnetInputHandler.start();
         long start = System.currentTimeMillis();
-        while (isTelnetNegotiationFinished == false && System.currentTimeMillis() - start < NEGOTIATION_TIMEOUT) {
+        while (isTelnetNegotiationFinished == false && System.currentTimeMillis() - start < negotiationTimeout) {
             try {
                 wait(TIMEOUT);
             } catch (InterruptedException e) {
