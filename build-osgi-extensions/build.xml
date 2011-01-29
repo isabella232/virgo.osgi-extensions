@@ -4,6 +4,7 @@
 	<path id="bundles">
 		<pathelement location="../org.eclipse.virgo.osgi.extensions.equinox"/>
 		<pathelement location="../org.eclipse.virgo.osgi.launcher"/>
+		<pathelement location="../org.eclipse.virgo.osgi.console"/>
 	</path>
 
 	<property file="${basedir}/../build.properties"/>

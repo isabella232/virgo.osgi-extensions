@@ -21,7 +21,7 @@ import java.io.PipedOutputStream;
 
 public class ConsoleInputHandlerTests {
 
-    private static final long WAIT_TIME = 10000;
+    private static final long WAIT_TIME = 2000;
 
     @Test
     public void testHandler() throws Exception {

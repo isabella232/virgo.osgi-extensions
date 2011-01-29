@@ -33,7 +33,7 @@ public class TelnetManagerTests {
 
     private static final int PORT_NEGATIVE_TEST = 38889;
 
-    private static final long WAIT_TIME = 5000;
+    private static final long WAIT_TIME = 2000;
 
     private static final int TEST_CONTENT = 100;
 
