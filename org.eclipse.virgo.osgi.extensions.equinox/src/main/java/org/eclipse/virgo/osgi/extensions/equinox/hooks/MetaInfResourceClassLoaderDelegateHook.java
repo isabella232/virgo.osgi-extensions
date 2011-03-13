@@ -51,13 +51,19 @@ import org.osgi.service.packageadmin.PackageAdmin;
 @SuppressWarnings("deprecation")
 public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelegateHook {
 
-    private static final String DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME = "org.springframework.osgi.context.support.DelegatedNamespaceHandlerResolver";
+    private static final String SPRINGDM_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME = "org.springframework.osgi.context.support.DelegatedNamespaceHandlerResolver";
     
-    private static final String DELEGATED_ENTITY_RESOLVER_CLASS_NAME = "org.springframework.osgi.context.support.DelegatedEntityResolver";
+    private static final String SPRINGDM_DELEGATED_ENTITY_RESOLVER_CLASS_NAME = "org.springframework.osgi.context.support.DelegatedEntityResolver";
+    
+    private static final String BLUEPRINT_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME = "org.eclipse.gemini.blueprint.context.support.DelegatedNamespaceHandlerResolver";
+    
+    private static final String BLUEPRINT_DELEGATED_ENTITY_RESOLVER_CLASS_NAME = "org.eclipse.gemini.blueprint.context.support.ChainedEntityResolver";
 
     private static final String EXCLUDED_RESOURCE_MANIFEST = "MANIFEST.MF";
 
     private static final String EXCLUDED_RESOURCE_SPRING_DIR = "spring";
+    
+    private static final String EXCLUDED_RESOURCE_BLUEPRINT_DIR = "blueprint";
 
     private static final String EXCLUDED_RESOURCE_SPRING_DIR_SUFFIX = ".xml";
 
@@ -169,7 +175,7 @@ public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelega
     }
 
     private boolean isDelegatedResource(String name) {
-        return isMetaInfResource(name) && !isSpringDmDelegatedResolverCall();
+        return isMetaInfResource(name) && !isSpringDmDelegatedResolverCall() && !isBlueprintDelegatedResolverCall();
     }
 
     /**
@@ -185,22 +191,31 @@ public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelega
         if (name.contains(EXCLUDED_RESOURCE_MANIFEST)) {
             return false;
         }
-        if (name.contains(EXCLUDED_RESOURCE_SPRING_DIR) && name.endsWith(EXCLUDED_RESOURCE_SPRING_DIR_SUFFIX)) {
+        if ((name.contains(EXCLUDED_RESOURCE_SPRING_DIR) || name.contains(EXCLUDED_RESOURCE_BLUEPRINT_DIR)) 
+            && name.endsWith(EXCLUDED_RESOURCE_SPRING_DIR_SUFFIX)) {
             return false;
         }
         return true;
     }
 
     private boolean isSpringDmDelegatedResolverCall() {
+        return isDelegatedResolverCall(SPRINGDM_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME, SPRINGDM_DELEGATED_ENTITY_RESOLVER_CLASS_NAME);
+    }
+    
+    private boolean isBlueprintDelegatedResolverCall() {
+        return isDelegatedResolverCall(BLUEPRINT_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME, BLUEPRINT_DELEGATED_ENTITY_RESOLVER_CLASS_NAME);
+    }
+    
+    private boolean isDelegatedResolverCall(String namespaceResolver, String entityResolver) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : stackTrace) {
             String className = element.getClassName();
-            if (DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME.equals(className) || DELEGATED_ENTITY_RESOLVER_CLASS_NAME.equals(className)) {
+            if (namespaceResolver.equals(className) || entityResolver.equals(className)) {
                 return true;
             }
         }
         return false;
-    }        
+    }
 
     private void addAll(Collection<URL> target, Enumeration<URL> source) {
         while (source != null && source.hasMoreElements()) {
