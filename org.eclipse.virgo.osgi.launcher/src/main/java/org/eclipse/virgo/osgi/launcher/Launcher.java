@@ -30,7 +30,7 @@ public class Launcher {
 	
 	private static final String SYSTEM_PROPERTY_TMPDIR = "java.io.tmpdir";
 
-	public static void main(String[] args) throws BundleException, IOException {
+	public static void main(String[] args) throws IOException {
 	    ensureTmpDirExists();
 	    
 		ArgumentParser parser = new ArgumentParser();
@@ -50,8 +50,13 @@ public class Launcher {
 		
 		builder.addFrameworkProperty(FRAMEWORK_PROPERTY_UNRECOGNIZED_ARGUMENTS, createUnrecognizedArgumentsProperty(command));
 
-		builder.start();	
-	}
+        try {
+            builder.start();
+        } catch (BundleException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 	
 	static void ensureTmpDirExists() throws IOException {
 	    String tmpDirProperty = System.getProperty(SYSTEM_PROPERTY_TMPDIR);
