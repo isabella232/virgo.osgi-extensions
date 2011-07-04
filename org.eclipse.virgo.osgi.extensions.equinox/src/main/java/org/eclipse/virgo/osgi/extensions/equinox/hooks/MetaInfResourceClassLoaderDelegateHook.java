@@ -105,31 +105,29 @@ public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelega
      * {@inheritDoc}
      */
     public URL postFindResource(String name, BundleClassLoader classLoader, BundleData data) throws FileNotFoundException {
-        if (isDelegatedResource(name)) {
-            if (this.resourceSearchInProgress.get() == null) {
-                try {
-                    this.resourceSearchInProgress.set(SEARCH_IN_PROGRESS_MARKER);
-
-                    Bundle[] bundles = getDependencyBundles(classLoader.getBundle());
-                    for (Bundle dependency : bundles) {
-                    	try {
-                    		int state = dependency.getState();
-							if (state == Bundle.ACTIVE || state == Bundle.RESOLVED) {
-		                        URL resource = dependency.getResource(name);
-		                        if (resource != null) {
-		                            return resource;
-		                        }
-                    		} else {
-                    			removeDependency(classLoader.getBundle(), dependency);
-                    		}
-                    	} catch (IllegalStateException _) {
-                        	// Dependency now UNINSTALLED
-                    		removeDependency(classLoader.getBundle(), dependency);
-                    	}
+        if (this.resourceSearchInProgress.get() == null && isDelegatedResource(name)) {
+            try {
+                this.resourceSearchInProgress.set(SEARCH_IN_PROGRESS_MARKER);
+                
+                Bundle[] bundles = getDependencyBundles(classLoader.getBundle());
+                for (Bundle dependency : bundles) {
+                    try {
+                        int state = dependency.getState();
+                        if (state == Bundle.ACTIVE || state == Bundle.RESOLVED) {
+                            URL resource = dependency.getResource(name);
+                            if (resource != null) {
+                                return resource;
+                            }
+                        } else {
+                            removeDependency(classLoader.getBundle(), dependency);
+                        }   
+                    } catch (IllegalStateException _) {
+                        // Dependency now UNINSTALLED
+                        removeDependency(classLoader.getBundle(), dependency);
                     }
-                } finally {
-                    this.resourceSearchInProgress.set(null);
                 }
+            } finally {
+                this.resourceSearchInProgress.set(null);
             }
         }
         return null;
@@ -140,34 +138,32 @@ public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelega
      * {@inheritDoc}
      */
     public Enumeration<URL> postFindResources(String name, BundleClassLoader classLoader, BundleData data) throws FileNotFoundException {
-        if (isDelegatedResource(name)) {
-            if (this.resourceSearchInProgress.get() == null) {
-                try {
-                    this.resourceSearchInProgress.set(SEARCH_IN_PROGRESS_MARKER);
+        if (this.resourceSearchInProgress.get() == null && isDelegatedResource(name)) {
+            try {
+                this.resourceSearchInProgress.set(SEARCH_IN_PROGRESS_MARKER);
 
-                    Set<URL> found = new HashSet<URL>();
-                    Bundle[] bundles = getDependencyBundles(classLoader.getBundle());
-                    for (Bundle dependency : bundles) {
-                        try {
-                        	int state = dependency.getState();
-							if (state == Bundle.RESOLVED || state == Bundle.ACTIVE) {
-                        		addAll(found, dependency.getResources(name));
-                        	} else {
-                        		removeDependency(classLoader.getBundle(), dependency);
-                        	}
-                        } catch (IOException _) {
-                        } catch (IllegalStateException _) {
-                        	// Dependency now UNINSTALLED
-                        	removeDependency(classLoader.getBundle(), dependency);
+                Set<URL> found = new HashSet<URL>();
+                Bundle[] bundles = getDependencyBundles(classLoader.getBundle());
+                for (Bundle dependency : bundles) {
+                    try {
+                        int state = dependency.getState();
+                        if (state == Bundle.RESOLVED || state == Bundle.ACTIVE) {
+                            addAll(found, dependency.getResources(name));
+                        } else {
+                            removeDependency(classLoader.getBundle(), dependency);
                         }
+                    } catch (IOException _) {
+                    } catch (IllegalStateException _) {
+                        // Dependency now UNINSTALLED
+                        removeDependency(classLoader.getBundle(), dependency);
                     }
-
-                    if (!found.isEmpty()) {
-                        return new IteratorEnumerationAdaptor<URL>(found.iterator());
-                    }
-                } finally {
-                    this.resourceSearchInProgress.set(null);
                 }
+
+                if (!found.isEmpty()) {
+                    return new IteratorEnumerationAdaptor<URL>(found.iterator());
+                }
+            } finally {
+                this.resourceSearchInProgress.set(null);
             }
         }
 
@@ -175,9 +171,9 @@ public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelega
     }
 
     private boolean isDelegatedResource(String name) {
-        return isMetaInfResource(name) && !isSpringDmDelegatedResolverCall() && !isBlueprintDelegatedResolverCall();
+        return isMetaInfResource(name) && !isDelegatedResolverCall();
     }
-
+    
     /**
      * Queries whether or not the supplied resource name is a META-INF resource.
      * 
@@ -198,16 +194,20 @@ public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelega
         return true;
     }
 
-    private boolean isSpringDmDelegatedResolverCall() {
-        return isDelegatedResolverCall(SPRINGDM_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME, SPRINGDM_DELEGATED_ENTITY_RESOLVER_CLASS_NAME);
-    }
-    
-    private boolean isBlueprintDelegatedResolverCall() {
-        return isDelegatedResolverCall(BLUEPRINT_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME, BLUEPRINT_DELEGATED_ENTITY_RESOLVER_CLASS_NAME);
-    }
-    
-    private boolean isDelegatedResolverCall(String namespaceResolver, String entityResolver) {
+    private boolean isDelegatedResolverCall() {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        return isSpringDmDelegatedResolverCall(stackTrace) || isBlueprintDelegatedResolverCall(stackTrace);
+    }
+    
+    private boolean isSpringDmDelegatedResolverCall(StackTraceElement[] stackTrace) {
+        return isDelegatedResolverCall(stackTrace, SPRINGDM_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME, SPRINGDM_DELEGATED_ENTITY_RESOLVER_CLASS_NAME);
+    }
+    
+    private boolean isBlueprintDelegatedResolverCall(StackTraceElement[] stackTrace) {
+        return isDelegatedResolverCall(stackTrace, BLUEPRINT_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME, BLUEPRINT_DELEGATED_ENTITY_RESOLVER_CLASS_NAME);
+    }
+    
+    private boolean isDelegatedResolverCall(StackTraceElement[] stackTrace, String namespaceResolver, String entityResolver) {
         for (StackTraceElement element : stackTrace) {
             String className = element.getClassName();
             if (namespaceResolver.equals(className) || entityResolver.equals(className)) {
