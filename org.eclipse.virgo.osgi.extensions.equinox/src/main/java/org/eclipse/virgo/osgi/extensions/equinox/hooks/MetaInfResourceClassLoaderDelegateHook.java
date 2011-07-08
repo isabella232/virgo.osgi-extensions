@@ -193,23 +193,35 @@ public class MetaInfResourceClassLoaderDelegateHook implements ClassLoaderDelega
         }
         return true;
     }
-
+    
     private boolean isDelegatedResolverCall() {
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        Class<?>[] stackTrace = new SecurityManagerExecutionStackAccessor().getExecutionStack();
         return isSpringDmDelegatedResolverCall(stackTrace) || isBlueprintDelegatedResolverCall(stackTrace);
     }
     
-    private boolean isSpringDmDelegatedResolverCall(StackTraceElement[] stackTrace) {
+    private final class SecurityManagerExecutionStackAccessor extends SecurityManager {
+        
+        public Class<?>[] getExecutionStack() {
+            Class<?>[] classes = super.getClassContext();
+            Class<?>[] executionStack = new Class<?>[classes.length - 1];
+            
+            System.arraycopy(classes, 1, executionStack, 0, executionStack.length);
+            
+            return executionStack;
+        }
+    }
+    
+    private boolean isSpringDmDelegatedResolverCall(Class<?>[] stackTrace) {
         return isDelegatedResolverCall(stackTrace, SPRINGDM_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME, SPRINGDM_DELEGATED_ENTITY_RESOLVER_CLASS_NAME);
     }
     
-    private boolean isBlueprintDelegatedResolverCall(StackTraceElement[] stackTrace) {
+    private boolean isBlueprintDelegatedResolverCall(Class<?>[] stackTrace) {
         return isDelegatedResolverCall(stackTrace, BLUEPRINT_DELEGATED_NAMESPACE_HANDLER_RESOLVER_CLASS_NAME, BLUEPRINT_DELEGATED_ENTITY_RESOLVER_CLASS_NAME);
     }
     
-    private boolean isDelegatedResolverCall(StackTraceElement[] stackTrace, String namespaceResolver, String entityResolver) {
-        for (StackTraceElement element : stackTrace) {
-            String className = element.getClassName();
+    private boolean isDelegatedResolverCall(Class<?>[] stackTrace, String namespaceResolver, String entityResolver) {
+        for (Class<?> clazz : stackTrace) {
+            String className = clazz.getName();
             if (namespaceResolver.equals(className) || entityResolver.equals(className)) {
                 return true;
             }
