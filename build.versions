@@ -5,7 +5,7 @@ org.eclipse.osgi=3.7.1.R37x_v20110808-1106
 org.aspectj=1.6.12.RELEASE
 org.junit=4.7.0
 org.easymock=2.3.0
-org.eclipse.virgo.teststubs=3.5.0.M03
+org.eclipse.virgo.teststubs=3.5.0.D-20120329112850
 
 # Osgi Launcher Test
 org.apache.commons=1.4.1
