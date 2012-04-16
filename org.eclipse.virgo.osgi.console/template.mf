@@ -1,6 +1,5 @@
 Bundle-ManifestVersion: 2
 Bundle-Name: Console
-Bundle-Vendor: SpringSource Inc.
 Bundle-SymbolicName: org.eclipse.virgo.osgi.console
 Bundle-Version: ${version}
 Fragment-Host: org.eclipse.osgi; extension:=framework

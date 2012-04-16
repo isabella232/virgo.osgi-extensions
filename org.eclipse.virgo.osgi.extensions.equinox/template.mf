@@ -1,6 +1,5 @@
 Bundle-ManifestVersion: 2
 Bundle-Name: Equinox Specific OSGi Extensions
-Bundle-Vendor: SpringSource Inc.
 Bundle-SymbolicName: org.eclipse.virgo.osgi.extensions.equinox
 Bundle-Version: ${version}
 Fragment-Host: org.eclipse.osgi; extension:=framework
