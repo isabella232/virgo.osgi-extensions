@@ -1,5 +1,5 @@
 # Compile
-org.eclipse.osgi=3.7.1.R37x_v20110808-1106
+org.eclipse.osgi=3.8.0.v20120508-2119
 
 # Test
 org.aspectj=1.6.12.RELEASE
