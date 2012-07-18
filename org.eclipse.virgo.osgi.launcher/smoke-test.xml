@@ -11,15 +11,13 @@
 	</target>
 
 	<target name="startup">
-        <ivy:cachepath resolveId="osgi.classpath" pathid="osgi.classpath" organisation="org.eclipse.virgo.mirrored"
-        module="org.eclipse.osgi" revision="${org.eclipse.osgi}"
-        conf="runtime" type="jar" inline="true" log="download-only"/>
-        
+		<ivy:cachepath resolveId="osgi.classpath" pathid="osgi.classpath" organisation="org.eclipse.virgo.mirrored"
+				module="org.eclipse.osgi" revision="${org.eclipse.osgi}"
+				conf="runtime" type="jar" inline="true" log="download-only"/>
 		<echo message="Starting Up OSGi Launcher" />
 		<java classname="org.eclipse.virgo.osgi.launcher.Launcher" fork="true" spawn="true">
 			<arg value="-Fosgi.console=${console.port}"/>
             <arg value="-Fosgi.console.enable.builtin=true"/>
-
 			<arg value="-Fosgi.configuration.area=target"/>
 			<arg value="-B${test.bundle}"/>
 			<classpath>
